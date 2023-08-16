@@ -53,7 +53,35 @@ class TiendaViewsTests(TestCase):
 
         ords = res.context["ordenes"]
         self.assertEqual(1, len(ords))
+        self.assertEqual('Albertito', ords.first().cliente)
+        self.assertEqual('Av. Libertad', ords.first().direccion)
 
+    def test_v_index_filtros_fecha_envio(self):
+        no = Orden()
+        no.cliente = "Pedrito"
+        no.fecha = "2022-12-12"
+        no.fecha_envio = datetime(2022, 12, 12).\
+            astimezone(zoneinfo.ZoneInfo('America/Santiago'))
+        no.direccion = "Av. Libertad"
+        no.save()
+
+        no = Orden()
+        no.cliente = "Albertito"
+        no.fecha = "2023-12-12"
+        no.fecha_envio = datetime(2023, 12, 12).\
+            astimezone(zoneinfo.ZoneInfo('America/Santiago'))
+        no.direccion = "Av. Libertad"
+        no.save()
+
+        res = self.client.get("/?fecha_e_inicio=%s&fecha_e_fin=%s" % (
+            '2023-11-01',
+            '2023-12-25',
+        ))
+
+        ords = res.context["ordenes"]
+        self.assertEqual(1, len(ords))
+        self.assertEqual('Albertito', ords.first().cliente)
+        self.assertEqual('Av. Libertad', ords.first().direccion)
 
 
 
